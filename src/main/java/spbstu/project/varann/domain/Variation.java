@@ -1,20 +1,18 @@
 package spbstu.project.varann;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
-@Entity
-@IdClass(VariationID.class)
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@IdClass(VariationID.class)
 public class Variation {
     @Id
     private String chrom;
