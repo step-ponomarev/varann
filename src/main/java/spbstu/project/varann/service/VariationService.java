@@ -1,5 +1,6 @@
 package spbstu.project.varann.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import spbstu.project.varann.domain.Variation;
@@ -7,39 +8,33 @@ import spbstu.project.varann.domain.VariationID;
 import spbstu.project.varann.VariationRepository;
 import spbstu.project.varann.parser.VcfParser;
 
+import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class VariationService {
   private final VariationRepository repository;
   private final VcfParser parser;
 
-  public VariationService(VariationRepository repository, VcfParser parser) {
-    this.repository = repository;
-    this.parser = parser;
-  }
-
-  public Variation get(VariationID variationID) {
+  public Variation annotate(VariationID variationID) {
     return repository.findById(variationID).get();
   }
 
-  public void post(MultipartFile file) {
-    try {
-      var variations = parser.parse(file.getInputStream());
+  public List<Variation> store(InputStream inputStream) {
+    List<Variation> variations = parser.parse(inputStream)
+        .map(variation ->
+            Variation.builder()
+                .chrom(variation.getContig())
+                .pos(variation.getStart())
+                .ref(variation.getReference().getDisplayString())
+                .alt(variation.getAlternateAlleles().toString())
+                .info(variation.getCommonInfo().getAttributes().toString())
+                .build()
+        )
+        .collect(Collectors.toList());
 
-      variations.forEach(variation -> {
-
-        var newVariation = Variation.builder()
-            .chrom(variation.getContig())
-            .pos(variation.getStart())
-            .ref(variation.getReference().getDisplayString())
-            .alt(variation.getAlternateAlleles().toString())
-            .info(variation.getCommonInfo().getAttributes().toString())
-            .build();
-
-        repository.save(newVariation);
-      });
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    return repository.saveAll(variations);
   }
 }
