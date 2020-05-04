@@ -1,5 +1,6 @@
 package spbstu.project.varann.service;
 
+import htsjdk.variant.variantcontext.VariantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,17 +25,21 @@ public class VariationService {
 
   public List<Variation> store(InputStream inputStream) {
     List<Variation> variations = parser.parse(inputStream)
-        .map(variation ->
-            Variation.builder()
-                .chrom(variation.getContig())
-                .pos(variation.getStart())
-                .ref(variation.getReference().getDisplayString())
-                .alt(variation.getAlternateAlleles().toString())
-                .info(variation.getCommonInfo().getAttributes().toString())
-                .build()
-        )
+        .map(variantContext -> toVariation(variantContext))
         .collect(Collectors.toList());
 
     return repository.saveAll(variations);
+  }
+
+  private Variation toVariation(VariantContext variantContext) {
+    final var variation = Variation.builder()
+        .chrom(variantContext.getContig())
+        .pos(variantContext.getStart())
+        .ref(variantContext.getReference().getDisplayString())
+        .alt(variantContext.getAlternateAlleles().toString())
+        .info(variantContext.getCommonInfo().getAttributes().toString())
+        .build();
+
+    return variation;
   }
 }

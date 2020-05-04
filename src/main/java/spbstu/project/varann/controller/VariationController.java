@@ -16,14 +16,12 @@ public class VariationController {
   private final VariationService variationService;
 
   @PostMapping
-  public List<Variation> storeVariation(@RequestParam("file") MultipartFile file) {
+  public void storeVariation(@RequestParam("file") MultipartFile file) {
     try {
-      return variationService.store(file.getInputStream());
+      variationService.store(file.getInputStream());
     } catch (Exception e) {
       e.printStackTrace();
     }
-
-    return null;
   }
 
   @GetMapping
