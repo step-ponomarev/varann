@@ -7,8 +7,6 @@ import spbstu.project.varann.domain.Variation;
 import spbstu.project.varann.domain.VariationID;
 import spbstu.project.varann.service.VariationService;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("variation")
