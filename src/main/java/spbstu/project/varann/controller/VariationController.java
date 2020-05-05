@@ -1,6 +1,7 @@
 package spbstu.project.varann.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.AnnotationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import spbstu.project.varann.domain.Variation;
@@ -18,7 +19,7 @@ public class VariationController {
     try {
       variationService.store(file.getInputStream());
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new AnnotationException("Annotations extraction has failed.", e);
     }
   }
 

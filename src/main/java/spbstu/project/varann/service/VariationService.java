@@ -25,21 +25,19 @@ public class VariationService {
 
   public List<Variation> store(InputStream inputStream) {
     List<Variation> variations = parser.parse(inputStream)
-        .map(variantContext -> toVariation(variantContext))
+        .map(this::toVariation)
         .collect(Collectors.toList());
 
     return repository.saveAll(variations);
   }
 
   private Variation toVariation(VariantContext variantContext) {
-    final var variation = Variation.builder()
+    return Variation.builder()
         .chrom(variantContext.getContig())
         .pos(variantContext.getStart())
         .ref(variantContext.getReference().getDisplayString())
         .alt(variantContext.getAlternateAlleles().toString())
         .info(variantContext.getCommonInfo().getAttributes().toString())
         .build();
-
-    return variation;
   }
 }
